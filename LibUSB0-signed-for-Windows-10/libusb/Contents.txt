@@ -1,0 +1,22 @@
+This folder contains some archives downloaded from the LibUSB0 site:
+libusb-win32-device-bin-0.1.12.1.tar.gz - archive of the binaries of the device driver, absent a .inf file
+libusb-win32-filter-bin-0.1.12.1.exe - not sure, but included for completeness
+libusb-win32-src-0.1.12.1.tar.gz - archive of the source for the driver.  Note that it is built with somewhat obscure (at this time) tools, and NOT with Visual Studio.
+
+The libusb-win32-src-0.1.12.1.tar.gz archive can be expanded so that you can examine the source for this driver.
+I (George Byrkit, K9TRV) have NOT built this driver from source.  But this is the source that matches what
+we are using for LibUSB0 with Ozy/Magister from within PowerSDR and KISS Konsole.
+
+In the Driver folder is all my work to produce a signed-for-Windows-10 driver package.  It contains:
+folder 'disk1': the results of running MakeCab using LIBUSB-HPSDR.ddf as a control file.
+  This resulting cab file was then signed using DigiCert's DigiCertUtil.exe and submitted to Microsoft for Attestation signing.
+  Microsoft returned a zip file additionally signed with their certificate, which was placed in the SignedPackageFromMicrosft folder
+  and renamed from something like 123334345.zip to a more useful name.
+
+folder 'SignedPackageFromMicrosoft': contains the zip file LibUSB-HPSDR_driver_win10_x86_x64.zip, which contains the full driver package.
+	You should unzip the zip file, then install the driver as needed.  the file LIBUSB-HPSDR\LibUSB-HPSDR.inf is the control file for driver installation.
+
+There is a Microsoft admin account login at: https://developer.microsoft.com/en-us/dashboard/hardware
+ 
+Admin username: aadwfyo4ujoigv@TucsonAmateurPacketRadioCor.onmicrosoft.com
+Admin password: Tapr2017

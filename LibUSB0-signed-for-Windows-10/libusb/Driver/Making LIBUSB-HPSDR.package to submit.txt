@@ -1,0 +1,62 @@
+Here is the process to make the cab file for the LIBUSB-HPSDR
+driver and to submit to Microsoft.
+
+A lot of this process is found on:
+https://msdn.microsoft.com/en-us/windows/hardware/drivers/develop/attestation-signing-a-kernel-driver-for-public-release
+
+The information in the 'Register Your Company' section is somewhat misleading.  Visit this site instead:
+https://sysdev.microsoft.com/en-US/Hardware and follow the process to create an account, and to submit a signed 'winqual.exe'
+file.  If you end up at a page where is says to sign an XML file and such, you are at the wrong place!
+
+After creating the accocunt and giving yourself all kinds of rights and privileges, click in the 'File Signing Services'.  You will be
+told that you don't have the privileges needed, and it will suggest signing some documents (agreements).  THere are currently about 10 of them
+to sign.  Once you sign them all, you will be allowed to the Driver submittal section.  At this point, you need to learn how to
+make a .cab file.  You will find that you need to create a .ddf file, so that you can make a cab file.  Instructions for a .ddf
+file are found at: https://msdn.microsoft.com/en-us/library/bb417343.aspx#dir_file_syntax
+
+Then run MakeCab from the command line, with likely the directory where all the files are as the current directory (or at least where the .ddf
+file is...):
+MakeCab /f "D:\HPSDR\LibUSB\Driver\LibUSB-HPSDR.ddf
+
+; *** LibUSB-HPSDR.ddf ***
+;
+.OPTION EXPLICIT     ; Generate errors
+.Set CabinetFileCountThreshold=0
+.Set FolderFileCountThreshold=0
+.Set FolderSizeThreshold=0
+.Set MaxCabinetSize=0
+.Set MaxDiskFileCount=0
+.Set MaxDiskSize=0
+.Set CompressionType=MSZIP
+.Set Cabinet=on
+.Set Compress=on
+; Specify file name for new cab file
+.Set CabinetNameTemplate=LibUSB-HPSDR.cab
+; Specify the subdirectory for the files.  
+; Your cab file should not have files at the root level, 
+; and each driver package must be in a separate subfolder.
+.Set DestinationDir=LibUSB-HPSDR
+; Specify files to be included in cab file
+D:\HPSDR\LibUSB\Driver\LibUSB-HPSDR.Inf
+D:\HPSDR\LibUSB\Driver\LibUSB0.dll
+D:\HPSDR\LibUSB\Driver\LibUSB0.sys
+D:\HPSDR\LibUSB\Driver\LibUSB0_x64.dll
+D:\HPSDR\LibUSB\Driver\LibUSB0_x64.sys
+D:\HPSDR\LibUSB\Driver\inf-wizard.exe
+D:\HPSDR\LibUSB\Driver\install-filter.exe
+D:\HPSDR\LibUSB\Driver\testlibusb.exe
+D:\HPSDR\LibUSB\Driver\testlibusb-win.exe
+
+--------------------------------
+Running MakeCab will create 'setup.inf' and 'setup.rpt' files, which can subsequently be ignored or deleted.
+--------------------------------
+
+The next steps are to sign and submit the cab file, following the directions on the Attestation Signing page.
+Note that you should probably run 'INF2CAT' on your .inf file to ensure that it is (still) correct.  Inf2Cat is likely found in:
+C:\Program Files (x86)\Windows Kits\10\bin\x86
+
+A reasonable command line would be:
+"C:\Program Files (x86)\Windows Kits\10\bin\x86\inf2cat" /driver:. /OS:10_x86,10_x64
+
+If this runs well, and without error, you have a good chance that the driver cab file submittal process will complete.
+

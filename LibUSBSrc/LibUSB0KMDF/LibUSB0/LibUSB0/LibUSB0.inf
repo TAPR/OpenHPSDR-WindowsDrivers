@@ -1,0 +1,102 @@
+;
+; LibUSB0.inf
+;
+
+[Version]
+Signature="$WINDOWS NT$"
+Class=USBDevice
+ClassGuid={88BAE032-5A81-49f0-BC3D-A4FF138216D6}
+Provider=%ManufacturerName%
+CatalogFile=LibUSB0.cat
+DriverVer=
+
+[DestinationDirs]
+DefaultDestDir = 12
+
+[SourceDisksNames]
+1 = %DiskName%,,,""
+
+[SourceDisksFiles]
+LibUSB0.sys  = 1,,
+
+;*****************************************
+; Install Section
+;*****************************************
+
+[Manufacturer]
+%ManufacturerName%=Standard,NT$ARCH$
+
+[Standard.NT$ARCH$]
+%LibUSB0.DeviceDesc%=LibUSB0_Device, USB\VID_vvvv&PID_pppp
+
+[LibUSB0_Device.NT]
+CopyFiles=Drivers_Dir
+
+[Drivers_Dir]
+LibUSB0.sys
+
+[LibUSB0_Device.NT.HW]
+AddReg=LibUSB0_AddReg
+
+[LibUSB0_AddReg]
+; By default, USBDevice class uses iProduct descriptor to name the device in
+; Device Manager on Windows 8 and higher.
+; Uncomment for this device to use %DeviceName% on Windows 8 and higher:
+;HKR,,FriendlyName,,%LibUSB0.DeviceDesc%
+
+;-------------- Class definition
+
+[ClassInstall32]
+AddReg = ClassInstall_AddReg
+
+[ClassInstall_AddReg]
+HKR,,,,%ClassName%
+HKR,,NoInstallClass,,1
+HKR,,IconPath,%REG_MULTI_SZ%,"%%systemroot%%\system32\setupapi.dll,-20"
+HKR,,LowerLogoVersion,,5.2
+
+;-------------- Service installation
+[LibUSB0_Device.NT.Services]
+AddService = LibUSB0,%SPSVCINST_ASSOCSERVICE%, LibUSB0_Service_Inst
+
+; -------------- LibUSB0 driver install sections
+[LibUSB0_Service_Inst]
+DisplayName    = %LibUSB0.SVCDESC%
+ServiceType    = 1               ; SERVICE_KERNEL_DRIVER
+StartType      = 3               ; SERVICE_DEMAND_START
+ErrorControl   = 1               ; SERVICE_ERROR_NORMAL
+ServiceBinary  = %12%\LibUSB0.sys
+
+;
+;--- LibUSB0_Device Coinstaller installation ------
+;
+
+[DestinationDirs]
+LibUSB0_Device_CoInstaller_CopyFiles = 11
+
+[LibUSB0_Device.NT.CoInstallers]
+AddReg=LibUSB0_Device_CoInstaller_AddReg
+CopyFiles=LibUSB0_Device_CoInstaller_CopyFiles
+
+[LibUSB0_Device_CoInstaller_AddReg]
+HKR,,CoInstallers32,0x00010000, "WdfCoInstaller$KMDFCOINSTALLERVERSION$.dll,WdfCoInstaller"
+
+[LibUSB0_Device_CoInstaller_CopyFiles]
+WdfCoInstaller$KMDFCOINSTALLERVERSION$.dll
+
+[SourceDisksFiles]
+WdfCoInstaller$KMDFCOINSTALLERVERSION$.dll=1 ; make sure the number matches with SourceDisksNames
+
+[LibUSB0_Device.NT.Wdf]
+KmdfService =  LibUSB0, LibUSB0_wdfsect
+[LibUSB0_wdfsect]
+KmdfLibraryVersion = $KMDFVERSION$
+
+[Strings]
+SPSVCINST_ASSOCSERVICE= 0x00000002
+ManufacturerName="<Your manufacturer name>" ;TODO: Replace with your manufacturer name
+ClassName="Universal Serial Bus devices"
+DiskName = "LibUSB0 Installation Disk"
+LibUSB0.DeviceDesc = "LibUSB0 Device"
+LibUSB0.SVCDESC = "LibUSB0 Service"
+REG_MULTI_SZ = 0x00010000
